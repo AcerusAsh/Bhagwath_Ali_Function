@@ -1,0 +1,27 @@
+import numpy as np
+import matplotlib.pyplot as plt
+points = np.round(np.random.uniform(0.001, 0.999, (1000, 2)), 3)
+x = points[:, 0]
+y = points[:, 1]
+far = x
+tpr = y
+f_vals = np.round(x ** (np.log10(tpr) / np.log10(far)),3)
+results = (y == f_vals)
+print("Number of matches:", np.sum(results))
+print("\nAll points satisfy:", np.all(results))
+for i in range(len(x)):
+    if not results[i]:
+        print(f"x = {x[i]}, y = {y[i]} are NOT matching")
+x_curve = np.linspace(0.001, 1, 300)
+plt.figure()
+for i in range(len(far)):
+    k = np.log(tpr[i]) / np.log(far[i])
+    y_curve = x_curve ** k
+    plt.plot(x_curve, y_curve, alpha=0.05)
+plt.scatter(far, tpr, color='black', s=10, label='Points')
+plt.plot([0, 1], [0, 1], linestyle='--', label='y = x')
+plt.xlabel("False Alarm Rate")
+plt.ylabel("Hit Rate")
+plt.title("Receiver Operator Characteristics curve for each point")
+plt.legend()
+plt.show()

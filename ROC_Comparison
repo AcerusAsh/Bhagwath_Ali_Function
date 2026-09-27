@@ -1,0 +1,44 @@
+from sklearn.metrics import auc
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+def bh_ali(a,b):
+    return math.log10(a)/math.log10(a*b)
+hr = []
+far = []
+tpr = []
+fpr = []
+for a in range(1000):
+    tp = np.round(np.random.uniform(0.001, 0.999),3)
+    fp = np.round(np.random.uniform(0.001, 0.999),3)
+    hr.append(tp)
+    far.append(fp)
+    tpr.append([0,tp,1])
+    fpr.append([0,fp,1])
+trr = []
+for a in range(1000):
+    trr.append(round(auc(fpr[a],tpr[a]),3))
+bar = []
+for a in range(1000):
+    bar.append(round(bh_ali(far[a],hr[a]),3))
+bar = np.array(bar)
+trr = np.array(trr)
+B = bar.reshape(-1,1)
+model = LinearRegression()
+model.fit(B, trr)
+r_squared = model.score(B, trr)
+print(f"R square Score: {r_squared:.2f}")
+y_true = trr
+y_pred = bar
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x=y_true, y=y_pred)
+max_val = max(max(y_true), max(y_pred))
+min_val = min(min(y_true), min(y_pred))
+plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='Perfect Prediction')
+plt.xlabel('Observed Values')
+plt.ylabel('Expected (Predicted) Values')
+plt.title('Observed vs. Expected Regression Plot')
+plt.legend()
+plt.show()
